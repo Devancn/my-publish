@@ -6,7 +6,8 @@ const fs = require('fs');
 /* GET home page. */
 router.post('/', function (req, res, next) {
   console.log(req, request.body)
-  fs.writeFileSync("../server/public/" + req.query.filename, req.body.content)
+  fs.writeFileSync("../server/public/" + req.query.filename, req.body.content);
+  res.end()
   // res.render('index', { title: 'Express' });
 });
 
