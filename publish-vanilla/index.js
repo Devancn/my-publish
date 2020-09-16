@@ -4,7 +4,6 @@ const fs = require('fs');
 const server = http.createServer((req, res) => {
     let matched = req.url.match(/filename=([^&]+)/);
     let filename = matched && matched[1];
-    console.log(filename)
     if (!filename) return;
     let writeStream = fs.createWriteStream("../server/public/" + filename);
     req.pipe(writeStream);

@@ -1,44 +1,61 @@
 const fs = require('fs');
 const http = require('http');
-const querystring = require('querystring');
+const archiver = require('archiver');
+let packname = "package";
 
-let filename = "./cat.jpg";
-
-fs.stat(filename, (err, stat) => {
-    const options = {
-        host: 'localhost',
-        port: 8081,
-        path: '/?filename=cat.jpg',
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/octet-stream',
-            'Content-Length': stat.size
-        }
+// fs.stat(filename, (err, stat) => {
+const options = {
+    host: 'localhost',
+    port: 8081,
+    path: `/?filename=${packname}.zip`,
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/octet-stream'
     }
-    const req = http.request(options, res => {
-        console.log(`STATUS: ${res.statusCode}`);
-        /*res.setEncoding('utf-8');
-        res.on('data', chunk => {
-            console.log(chunk)
-        })
-        res.on('end', () => {
-            console.log('No more data in response')
-        })*/
-    });
+}
 
-    req.on('error', e => {
-        console.log(e.message)
+const archive = archiver('zip', {
+    zlib: { level: 9 }
+});
+
+archive.directory(packname, false);
+
+
+archive.finalize();
+
+
+
+const req = http.request(options, res => {
+    console.log(`STATUS: ${res.statusCode}`);
+    /*res.setEncoding('utf-8');
+    res.on('data', chunk => {
+        console.log(chunk)
     })
+    res.on('end', () => {
+        console.log('No more data in response')
+    })*/
+});
 
-    let readStream = fs.createReadStream(filename);
+req.on('error', e => {
+    console.log(e.message)
+})
 
-    readStream.pipe(req)
-    readStream.on('end', () => {
-        req.end();
-    })
+archive.pipe(req)
+
+archive.on('end', () => {
+    req.end();
+})
+
+/*let readStream = fs.createReadStream("./" + packname);
+
+readStream.pipe(req)
+readStream.on('end', () => {
+    req.end();
+})
+*/
     // req.write(postData);
     // req.end();
-})
+// })
 
 
 
