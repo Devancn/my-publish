@@ -1,6 +1,6 @@
 var page = require('webpage').create();
 
-page.open('http://baidu.com', function (status) {
+page.open('http://localhost:8080/', function (status) {
     console.log('status:' + status);
     if (status === 'success') {
         var body = page.evaluate(function () {
