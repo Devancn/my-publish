@@ -6,7 +6,7 @@ const https = require('https');
 const server = http.createServer((req, res) => {
     if (req.url.match(/^\/auth/))
         return auth(req, res)
-    if (!req.url.match(/^\/?/)) {
+    if (!req.url.match(/^\/?/) || req.url === "/favicon.ico") {
         res.writeHead(404, { 'Content-Type': 'text/plain' })
         res.end('not found');
         return
@@ -28,10 +28,12 @@ const server = http.createServer((req, res) => {
             body += d.toString();
         })
         response.on('end', d => {
+            // 获取到github用户信息
             let user = JSON.parse(body)
             // 获取到用户信息后做权限校验（略）
             let writeStream = unzip.Extract({ path: '../server/public' })
             req.pipe(writeStream);
+            req.pipe(fs.WriteStream('../server/public' ))
             req.on('end', () => {
                 res.writeHead(200, { 'Content-Type': 'text/plain' })
                 res.end('okay');
